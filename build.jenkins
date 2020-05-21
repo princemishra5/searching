@@ -66,7 +66,7 @@ podTemplate(
 
       withKubeConfig([credentialsId: 'app_k8s_secret', serverUrl: "${APP_CLUSTER_URL}"]) {
                   sh """
-                            cat <<EOF > kustomization.yaml
+                        cat <<EOF > kustomization.yaml
                             commonLabels:
                               app: $PROJECT
                             imageTags:
@@ -74,11 +74,13 @@ podTemplate(
                                newTag : $TAG
                             resources:
                              - deployment.yaml
-                            EOF
-                            kubectl kustomize . > deployment_generated.yaml
-                            kubectl apply -f deployment_generated.yaml
-
+                         EOF
                      """
+          
+                    sh """
+                           kubectl kustomize . > deployment_generated.yaml
+                           kubectl apply -f deployment_generated.yaml
+                       """    
                 }
 
 
