@@ -79,7 +79,7 @@ podTemplate(
           
                     sh """
                       
-                       echo $PROJECT | sed -e "s/-/\".\"/g"
+                       echo $PROJECT | sed -e "s/_/\".\"/g"
                        kubectl create namespace $TEAM
                        kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG -n $TEAM
                       """  
