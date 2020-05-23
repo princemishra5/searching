@@ -4,8 +4,8 @@ def PROJECT = "semics_searching"
 def TEAM = "semics"
 def label = "${PROJECT}-${UUID.randomUUID().toString()}"
 def MAVEN_OPTIONS = "-DskipTests"
-def IMAGE_URL="acrsharedcommon64963.azurecr.io"
-def APP_CLUSTER_URL="https://sample-java-app-dev-ba5cb1be.hcp.westus2.azmk8s.io"
+def IMAGE_URL="acrsharedcommon59598.azurecr.io"
+def APP_K8s_URL="https://sample-java-app-dev-f2f0e902.hcp.westus2.azmk8s.io"
 
 podTemplate(
     label: label,
@@ -65,7 +65,7 @@ podTemplate(
             container('kubectl'){
 
       withKubeConfig([credentialsId: 'app_k8s_secret', serverUrl: "${APP_CLUSTER_URL}"]) {
-                  sh """
+                 /* sh """
                         cat <<EOF > kustomization.yaml
                             commonLabels:
                               app: $PROJECT
@@ -75,11 +75,11 @@ podTemplate(
                             resources:
                              - deployment.yaml
                          EOF
-                     """
+                     """ */
           
                     sh """
-                           kubectl kustomize . > deployment_generated.yaml
-                           kubectl apply -f deployment_generated.yaml
+                       kubectl create namespace $TEAM
+                       kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
                        """    
                 }
 
