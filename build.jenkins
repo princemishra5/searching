@@ -27,7 +27,38 @@ podTemplate(
             TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
         }
 
-       
+        stage ('Build') {
+            container ('maven') {
+                sh """
+                mvn clean install $MAVEN_OPTIONS
+                """
+            }
+        }
+        
+        stage ('Test') {
+            container ('maven') {
+              //  sh """
+              //  mvn test
+              //  """
+            }
+        }
+
+        stage ('Docker build and push') {
+            container ('docker') {
+
+                          docker.withRegistry("https://${IMAGE_URL}", 'registry-credentials-id') {
+                          IMAGE_NAME = "${TEAM}/${PROJECT.toLowerCase()}"
+                          def IMAGE_NAME_WITH_TAG = "${TEAM}/${PROJECT.toLowerCase()}:${TAG}"
+                          def customImage = docker.build(IMAGE_NAME_WITH_TAG)
+
+                            /* Push the container to the custom Registry */
+                            customImage.push()
+                         }
+
+                }
+
+
+            }
         
         
         stage ('Staging') {
@@ -48,6 +79,7 @@ podTemplate(
           
                     sh """
                        kubectl create namespace $TEAM
+                       kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
                       """  
                       // kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
                        //"""    
