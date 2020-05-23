@@ -76,7 +76,7 @@ podTemplate(
                              - deployment.yaml
                          EOF
                      """ */
-                    def appName = PROJECT.replaceAll('_', '.')
+                    def appName = PROJECT.replaceAll('_', '-')
           
                     sh """
                       
