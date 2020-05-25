@@ -21,7 +21,7 @@ podTemplate(
 ) {
     node(label) {
         def TAG
-        def IMAGE_NAME
+        def IMAGE_NAME = "${TEAM}/${PROJECT.toLowerCase()}"
         stage ('Checkout') {
             checkout scm
             TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -37,8 +37,9 @@ podTemplate(
                             commonLabels:
                               app: $PROJECT
                             imageTags:
-                             - name: $IMAGE_URL/$IMAGE_NAME
+                             - name: image_name
                                newTag : $TAG
+                               newnName: $IMAGE_URL/$IMAGE_NAME
                             resources:
                              - deployment.yaml
                          EOF
