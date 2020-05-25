@@ -31,7 +31,7 @@ podTemplate(
         stage ('Staging') {
             container('kubectl'){
 
-      withKubeConfig([credentialsId: 'app_k8s_secret', serverUrl: "${APP_CLUSTER_URL}"]) {
+   //   withKubeConfig([credentialsId: 'app_k8s_secret', serverUrl: "${APP_CLUSTER_URL}"]) {
                   sh """
                         cat <<EOF > kustomization.yaml
                             commonLabels:
@@ -54,7 +54,7 @@ podTemplate(
                       """  
                       // kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
                        //"""    
-                }
+     //           }
 
 
                }
