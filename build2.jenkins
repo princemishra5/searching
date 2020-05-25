@@ -1,0 +1,74 @@
+#!/usr/bin/env groovy
+
+def PROJECT = "semics_searching"
+def TEAM = "semics"
+def label = "${PROJECT}-${UUID.randomUUID().toString()}"
+def MAVEN_OPTIONS = "-DskipTests"
+def IMAGE_URL="acrsharedcommon69246.azurecr.io"
+def APP_CLUSTER_URL="https://sample-java-app-dev-a4747149.hcp.westus2.azmk8s.io"
+
+podTemplate(
+    label: label,
+    containers: [
+        containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'docker', image: 'docker:18.02', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'kubectl', image: 'krprince/kubectl_kustomize:latest', ttyEnabled: true, command: 'cat')
+    ],
+    volumes: [
+        hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+        hostPathVolume(hostPath: '/root/.m2', mountPath: '/root/.m2')
+    ]
+) {
+    node(label) {
+        def TAG
+        def IMAGE_NAME
+        stage ('Checkout') {
+            checkout scm
+            TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        }
+        
+        
+        stage ('Staging') {
+            container('kubectl'){
+
+      withKubeConfig([credentialsId: 'app_k8s_secret', serverUrl: "${APP_CLUSTER_URL}"]) {
+                  sh """
+                        cat <<EOF > kustomization.yaml
+                            commonLabels:
+                              app: $PROJECT
+                            imageTags:
+                             - name: $IMAGE_URL/$IMAGE_NAME
+                               newTag : $TAG
+                            resources:
+                             - deployment.yaml
+                         EOF
+                     """ 
+                    def appName = PROJECT.replaceAll('_', '-')
+          
+                    sh """
+                      
+                       
+                       kubectl get pods
+                       kubectl buid . > result.yaml
+                       cat result.yaml
+                      """  
+                      // kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
+                       //"""    
+                }
+
+
+               }
+        }
+        
+        
+         stage ('Production') {
+            sh 'echo "Deploying to production environment"'
+        }
+        
+
+        
+        }
+
+    
+        
+    }
