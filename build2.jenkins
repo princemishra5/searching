@@ -39,7 +39,7 @@ podTemplate(
                             imageTags:
                              - name: image_name
                                newTag : $TAG
-                               newnName: $IMAGE_URL/$IMAGE_NAME
+                               newName: $IMAGE_URL/$IMAGE_NAME
                             resources:
                              - deployment.yaml
                          EOF
