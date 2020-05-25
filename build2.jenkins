@@ -49,7 +49,7 @@ podTemplate(
                       
                        
                        kubectl get pods
-                       kubectl buid . > result.yaml
+                       kustomize build . > result.yaml
                        cat result.yaml
                       """  
                       // kubectl run $PROJECT --image=$IMAGE_URL/$IMAGE_NAME:$TAG
