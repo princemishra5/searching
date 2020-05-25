@@ -27,7 +27,7 @@ spec:
         app: searching
     spec:
       containers:
-      - image: acrsharedcommon69246.azurecr.io/searching
+      - image: image_name
         name: searching
         resources: {}
 status: {}
